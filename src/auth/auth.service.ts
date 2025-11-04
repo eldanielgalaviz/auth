@@ -1,19 +1,27 @@
-import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ForbiddenException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User, UserRole, JwtPayload } from './interfaces/user.interface';
 import { RegisterDto, LoginDto } from './dtos/auth.dto';
 import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   private users: User[] = [];
 
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private configService: ConfigService
+  ) {}
 
   async register(registerDto: RegisterDto): Promise<User> {
+    this.logger.log('Registrando nuevo usuario', registerDto);
+
     // Verificar si el email ya existe
     const existingUser = this.users.find(u => u.email === registerDto.email);
     if (existingUser) {
+      this.logger.warn(`Intento de registro con email existente: ${registerDto.email}`);
       throw new ForbiddenException('El email ya está registrado');
     }
 
@@ -33,8 +41,11 @@ export class AuthService {
     
     // Eliminar la contraseña antes de devolver
     const { password, ...userWithoutPassword } = newUser;
+    this.logger.log(`Usuario registrado: ${userWithoutPassword.email}`);
     return userWithoutPassword as User;
   }
+
+
 
   async login(loginDto: LoginDto): Promise<{ access_token: string, user: User }> {
     const user = this.users.find(u => u.email === loginDto.email);

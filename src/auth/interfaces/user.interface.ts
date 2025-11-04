@@ -1,4 +1,3 @@
-// En interfaces/user.interface.ts
 export enum UserRole {
   GUEST = 'guest',
   USER = 'user',
@@ -11,4 +10,12 @@ export interface User {
   email: string;
   password: string;
   role: UserRole;
+}
+
+export interface JwtPayload {
+  sub: string;
+  username: string;
+  role: UserRole;
+  iat?: number;
+  exp?: number;
 }
