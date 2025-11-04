@@ -9,7 +9,7 @@ export class RegisterDto {
   email: string;
 
   @IsNotEmpty({ message: 'La contraseña no puede estar vacía' })
-  @MinLength(4, { message: 'La contraseña debe tener al menos 4 caracteres' }) // Reducir longitud mínima
+  @MinLength(4, { message: 'La contraseña debe tener al menos 4 caracteres' })
   password: string;
 
   @IsOptional()
